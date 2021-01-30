@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class ClientHandler {
 
@@ -15,6 +16,9 @@ public class ClientHandler {
     private DataOutputStream dataOutputStream;
     private String nick;
 
+    //homework
+    private boolean isAuthentication = false;
+
     public ClientHandler(MyServer myServer, Socket socket) {
         try {
             this.myServer = myServer;
@@ -23,6 +27,19 @@ public class ClientHandler {
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
             new Thread(() -> {
                 try {
+                    //homework
+                    new Thread(() -> {
+                        try {
+                            TimeUnit.SECONDS.sleep(120);
+                            if (!isAuthentication){
+                                System.out.println("Клиент не аунтефицировался за заданное время!");
+                                closeConnection();
+                            }
+                        } catch (InterruptedException  e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    //
                     authentication();
                     readMessages();
                 } catch (IOException e) {
@@ -65,6 +82,7 @@ public class ClientHandler {
                     myServer.broadcastMessage(broadcastMsg);
                     myServer.subscribe(this);
                     this.nick = nick;
+                    isAuthentication = true;
                     return;
                 }
             } catch (IOException ignored) {
