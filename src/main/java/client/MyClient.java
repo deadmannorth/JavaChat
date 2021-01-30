@@ -5,6 +5,7 @@ import server.Message;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MyClient extends JFrame {
 
@@ -26,12 +27,18 @@ public class MyClient extends JFrame {
     JPasswordField passField = new JPasswordField(35);
     JButton authButton = new JButton("Вход");
 
+    //список
+    DefaultListModel<String> userList = new DefaultListModel<>();
+
 
 
     public MyClient(){
 
         serverService = new SocketServerService();
         serverService.openConnection();
+
+        userList.addElement("Cat");
+        userList.addElement("Dog");
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(exit);
@@ -144,7 +151,8 @@ public class MyClient extends JFrame {
 
     private JPanel getRightPanel(){
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JList<String> userList = new JList<>();
+        JList<String> users = new JList<>(userList);
+        rightPanel.add(new JScrollPane(users));
         return rightPanel;
     }
 
